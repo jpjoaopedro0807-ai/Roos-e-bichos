@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Robôs & Bichos — Sobrevivência</title>
+<meta name="theme-color" content="#090d18">
+<meta name="description" content="Robôs & Bichos: sobreviva a ondas de inimigos mecânicos.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090d18;color:#edf4ff;font-family:system-ui,Arial,sans-serif}main{max-width:560px;margin:auto;padding:14px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.eyebrow{color:#8aa7d9;font-size:11px;letter-spacing:2px}.title{font-size:clamp(22px,6vw,31px);font-weight:950;line-height:1.1}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:14px 0}.stat{background:#141d31;border:1px solid #273650;border-radius:10px;padding:8px;text-align:center}.stat small{display:block;color:#91a4c8;font-size:11px}.stat b{font-size:20px}#field{position:relative;height:min(54vh,450px);min-height:310px;background:radial-gradient(ellipse at 50% 15%,#1a2c4a,#0b1120 72%);border:1px solid #2b4268;border-radius:14px;overflow:hidden;touch-action:manipulation}.stars{position:absolute;inset:0;background-image:radial-gradient(#91b7ff 1px,transparent 1px);background-size:31px 37px;opacity:.2;pointer-events:none}.robot{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #7592bb;border-radius:12px;background:#182940;color:white;box-shadow:0 0 15px #4da5ff30;cursor:pointer;touch-action:manipulation;padding:3px;min-width:54px;min-height:58px}.robot .face{font-size:29px;line-height:1.1}.robot .name{font-size:9px;white-space:nowrap}.bar{height:4px;background:#34415a;width:100%;border-radius:8px;margin-top:3px;overflow:hidden}.bar i{display:block;height:100%;background:#63f2bd;width:100%}.overlay{position:absolute;inset:0;background:#080d19eF;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:10}.panel{max-width:340px}.panel h2{font-size:25px;margin:5px 0}.panel p{font-size:14px;line-height:1.5;color:#b5c5e0}.btn{border:0;border-radius:10px;padding:13px 17px;font-weight:850;background:#75e6ff;color:#07111e;font-size:15px;cursor:pointer}.btn2{background:#192842;color:#eaf4ff;border:1px solid #354967}.actions{display:flex;gap:8px;margin-top:10px}.actions button{flex:1}.hint{text-align:center;color:#91a4c8;font-size:12px;margin:10px 0}.flash{position:absolute;top:10px;left:0;right:0;text-align:center;color:#fff3a5;font-weight:800;pointer-events:none;font-size:13px}.boss{border-color:#ff647e!important;background:#4a1730!important;box-shadow:0 0 20px #ff426977!important}.zigzag{border-color:#c28bff!important;background:#332052!important;box-shadow:0 0 16px #b66bff66!important}.healer{border-color:#62e8a4!important;background:#153d37!important;box-shadow:0 0 16px #42ffb066!important}.factory{border-color:#e3bd75!important;background:#3b3020!important;box-shadow:0 0 14px #ffcf6b44!important}.inventory{display:flex;gap:8px;margin:10px 0}.inventory button{flex:1;background:#172844;color:#f2f6ff;border:1px solid #435b7f;border-radius:10px;padding:10px 5px;font-weight:800;font-size:12px}.inventory button:disabled{opacity:.35}.shop{display:flex;flex-direction:column;gap:9px;margin-top:12px}.shop button{width:100%;text-align:left;background:#25203d;color:#f8f2ff;border:1px solid #9a7ce0;border-radius:11px;padding:12px;font-weight:800;font-size:14px}.shop button span{display:block;color:#c8bce8;font-size:12px;font-weight:500;margin-top:4px}.panel{max-height:88vh;overflow-y:auto;overscroll-behavior:contain}.upgradeChoices{display:flex;flex-direction:column;gap:9px;margin-top:14px}.upgradeChoices button{width:100%;text-align:left;background:#172844;color:#f0f6ff;border:1px solid #4b6b98;border-radius:11px;padding:13px;font-weight:800;font-size:14px}.upgradeChoices button span{display:block;color:#a9bddf;font-size:12px;font-weight:500;margin-top:4px}.legend{font-size:12px;color:#b7c6df;line-height:1.7;margin-top:12px}
+
+/* Ajustes para telas deitadas: HUD compacto ao lado da arena. */
+@media (orientation:landscape) and (max-height:600px) and (min-width:600px){
+  html,body{min-height:100%;overflow:hidden}
+  main{
+    width:100%;max-width:1050px;height:100dvh;min-height:0;
+    padding:8px 12px;gap:6px;
+    display:grid;
+    grid-template-columns:minmax(245px,.82fr) minmax(300px,1.18fr);
+    grid-template-areas:
+      "top field"
+      "stats field"
+      "inventory field"
+      "actions field"
+      "legend field";
+    grid-template-rows:auto auto auto auto 1fr;
+    align-content:stretch;
+  }
+  .top{grid-area:top;gap:6px}
+  .eyebrow{font-size:9px;letter-spacing:1.3px}
+  .title{font-size:clamp(19px,3.4vw,27px)}
+  .top>div:last-child{font-size:27px!important}
+  .stats{grid-area:stats;gap:5px;margin:0}
+  .stat{padding:4px 3px;border-radius:8px}
+  .stat small{font-size:9px}
+  .stat b{font-size:16px}
+  .inventory{grid-area:inventory;gap:5px;margin:0}
+  .inventory button{padding:7px 3px;font-size:10px;border-radius:8px}
+  #field{grid-area:field;height:100%;min-height:0;max-height:none;border-radius:12px}
+  .actions{grid-area:actions;gap:6px;margin:0}
+  .actions button{padding:8px 10px;font-size:12px}
+  .legend{grid-area:legend;align-self:start;font-size:10px;line-height:1.4;margin:0;overflow:auto}
+  .overlay{padding:10px}
+  .panel{max-width:100%;max-height:calc(100dvh - 20px);overflow-y:auto}
+  .panel h2{font-size:clamp(18px,3.2vh,24px)}
+  .panel p{font-size:clamp(11px,2.1vh,13px);line-height:1.35;margin:7px 0}
+  .panel .btn{padding:9px 12px;font-size:12px}
+  .upgradeChoices{gap:6px;margin-top:8px}
+  .upgradeChoices button{padding:8px;font-size:12px}
+  .upgradeChoices button span{font-size:10px;margin-top:2px}
+  .flash{top:5px;font-size:11px}
+  .robot{min-width:46px;min-height:49px}
+  .robot .face{font-size:24px}
+}
+@media (orientation:landscape) and (max-height:420px) and (min-width:600px){
+  main{padding:5px 8px;gap:4px;grid-template-columns:minmax(220px,.78fr) minmax(280px,1.22fr)}
+  .legend{font-size:9px;line-height:1.25}
+  .stat b{font-size:14px}
+  .inventory button{font-size:9px;padding:5px 2px}
+  .actions button{padding:6px;font-size:11px}
+  .panel .btn{padding:7px 10px}
+}
+
+</style>
+<main>
+<div class="top"><div><div class="eyebrow">ARCADE • ONDAS INFINITAS</div><div class="title">ROBÔS & BICHOS</div></div><div style="font-size:34px">🤖</div></div>
+<div class="stats"><div class="stat"><small>TEMPO</small><b id="time">0.0s</b></div><div class="stat"><small>PARAFUSOS</small><b id="kills">0</b></div><div class="stat"><small>ONDA</small><b id="wave">1</b></div><div class="stat"><small>FALTAM</small><b id="remaining">10</b></div></div><div class="inventory"><button id="freeze">⏸️ Tempo <b id="freezeN">0</b>/3</button><button id="blast">💥 Limpeza <b id="blastN">0</b>/3</button><button id="heal">🔧 Reparo <b id="healN">0</b>/3</button></div>
+<div id="field"><div class="stars"></div><div class="flash" id="flash"></div><div class="overlay" id="overlay"><div class="panel"><div style="font-size:48px">🤖⚙️🦾</div><h2>Uma invasão mecânica!</h2><p>Cinco tipos de robozinhos aparecem aleatoriamente. <b>Toque repetidamente neles</b> para derrotá-los usando as próprias peças deles. Cada um tem vida; os mais fortes aguentam mais toques. Se qualquer robô escapar pela parte inferior, a partida acaba.</p><button class="btn" id="start">INICIAR SOBREVIVÊNCIA</button></div></div></div>
+<div class="actions"><button class="btn btn2" id="pause">Ⅱ Pausar</button><button class="btn btn2" id="restart">↻ Reiniciar</button></div>
+<div class="legend"><b>Como jogar:</b> toque no robô várias vezes para desmontá-lo. Robôs diferentes têm resistências diferentes; a dificuldade e a quantidade aumentam com o tempo. Melhorias especiais podem instalar disparadores automáticos que atacam os inimigos mais perto de escapar. Não deixe nenhum chegar ao fim da arena.</div>
+</main>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),field=$('field'),overlay=$('overlay');
+const types=[
+ {name:'Parafusito',face:'🤖',hp:1,spd:47,score:1},
+ {name:'Besouro-Bot',face:'🪲',hp:2,spd:39,score:2},
+ {name:'Aranha Mecânica',face:'🕷️',hp:3,spd:32,score:3},
+ {name:'Tanquezinho',face:'🦾',hp:5,spd:24,score:5},
+ {name:'Núcleo Caótico',face:'👾',hp:8,spd:20,score:8},
+ {name:'Zigzaguinho',face:'🦎',hp:3,spd:33,score:4,zigzag:true},
+ {name:'Mecânico Curador',face:'🧑‍🔧',hp:4,spd:30,score:5,healer:true},
+ {name:'Fábrica de Parafusos',face:'🏭',hp:2,spd:11,score:1,factory:true}
+];
+const upgrades=[
+ {id:'turretFirst',icon:'🎯',name:'Instalar mira automática',price:85,desc:'Instala o primeiro disparador: ele ataca sozinho o inimigo mais perto de escapar.'},
+ {id:'turretMore',icon:'🤖',name:'Outro disparador automático',price:25,desc:'Instala mais um disparador automático. Cada um ataca por conta própria.'},
+ {id:'turretPower',icon:'⚡',name:'Potência automática +1',price:35,desc:'Aumenta em 1 o dano de cada disparador automático.'},
+ {id:'damage',icon:'⚔️',name:'+1 de dano',price:25,desc:'Cada toque causa mais 1 de dano.'},
+ {id:'slow',icon:'🐌',name:'−1 velocidade inimiga',price:18,desc:'Todos os inimigos ficam um pouco mais lentos.'},
+ {id:'rapid',icon:'⚡',name:'Toque reforçado',price:30,desc:'A cada 5 toques, o próximo causa dano extra.'},
+ {id:'armor',icon:'🛡️',name:'Blindagem',price:22,desc:'Uma vez, deixa um inimigo escapar sem perder.'},
+ {id:'score',icon:'🔩',name:'Sucata valiosa',price:35,desc:'Cada inimigo derrotado vale +2 parafusos extras.'},
+ {id:'pocket',icon:'🎒',name:'Bolso extra',price:40,desc:'Aumenta em 1 a capacidade máxima dos itens especiais (até 5).'}
+];
+let active=false,paused=false,last=0,elapsed=0,kills=0,wave=1,spawnAcc=0,robots=[],raf=0,spawnEvery=1.35,best=0,damageBonus=0,slowStacks=0,choicePending=false,nextWave=2,rapidStacks=0,armorCharges=0,scoreBonus=0,taps=0,bossSpawned=0,freezeItems=0,blastItems=0,healItems=0,inventoryCap=3,freezeUntil=0,spawnBolts=0,waveKills=0,waveSpawned=0,autoTurrets=0,autoDamage=1,autoShotAcc=0,selectedUpgrade=null;
+try{best=Number(localStorage.getItem('robosBichosBest')||0)}catch(e){}
+function stats(){ $('time').textContent=elapsed.toFixed(1)+'s';$('kills').textContent=kills;$('wave').textContent=wave;$('remaining').textContent=Math.max(0,wave*10-waveKills);$('freezeN').textContent=freezeItems;$('blastN').textContent=blastItems;$('healN').textContent=healItems;$('freeze').disabled=freezeItems<=0||!active||paused;$('blast').disabled=blastItems<=0||!active||paused;$('heal').disabled=healItems<=0||!active||paused}
+function clearRobots(){robots.forEach(r=>r.el.remove());robots=[]}
+function end(){active=false;paused=false;cancelAnimationFrame(raf);overlay.style.display='flex';overlay.innerHTML=`<div class="panel"><div style="font-size:48px">💥</div><h2>Um robô escapou!</h2><p>Você sobreviveu <b>${elapsed.toFixed(1)} segundos</b> e desmontou <b>${kills}</b> robôs.<br>Onda alcançada: <b>${wave}</b>.</p><button class="btn" id="again">TENTAR NOVAMENTE</button></div>`;$('again').onclick=start}
+function priceFor(u){if(u.id==='turretMore')return 25+Math.max(0,autoTurrets-1)*10;if(u.id==='turretPower')return 35+(autoDamage-1)*20;return u.price}
+function availableUpgrades(){return upgrades.filter(u=>u.id==='turretFirst'?autoTurrets===0:u.id==='turretMore'?autoTurrets>0:u.id==='turretPower'?autoTurrets>0:true)}
+function chooseUpgrade(){if(!active)return;selectedUpgrade=null;paused=true;choicePending=true;cancelAnimationFrame(raf);overlay.style.display='flex';const pool=availableUpgrades();const choices=[...pool].sort(()=>Math.random()-.5).slice(0,3);const itemTypes=['freeze','blast','heal'];let rewardText='';const item=itemTypes[Math.floor(Math.random()*itemTypes.length)];const itemNames={freeze:'⏸️ Congelar tempo',blast:'💥 Explosão',heal:'🔧 Reparo de emergência'};const itemCounts={freeze:freezeItems,blast:blastItems,heal:healItems};if(itemCounts[item]<inventoryCap){if(item==='freeze')freezeItems++;if(item==='blast')blastItems++;if(item==='heal')healItems++;rewardText=itemNames[item];}else{const available=itemTypes.filter(t=>itemCounts[t]<inventoryCap);if(available.length){const got=available[Math.floor(Math.random()*available.length)];if(got==='freeze')freezeItems++;if(got==='blast')blastItems++;if(got==='heal')healItems++;rewardText=itemNames[got]+' (sorteado entre os disponíveis)';}else rewardText='Inventário cheio — nenhum item recebido';}stats();overlay.innerHTML=`<div class="panel"><div style="font-size:42px">🌳</div><h2>Onda ${wave} concluída!</h2><p>Você derrotou os ${wave*10} bichos desta onda!</p><p>🎁 Item aleatório recebido: <b>${rewardText}</b></p><p>Escolha <b>1 de 3 melhorias aleatórias</b>.</p><div class="upgradeChoices">${choices.map(u=>`<button data-up="${u.id}" ${kills<priceFor(u)?'disabled':''}>${u.icon} ${u.name} — 🔩 ${priceFor(u)}<span>${u.desc}</span>${kills<priceFor(u)?'<span>Você não tem parafusos suficientes.</span>':''}</button>`).join('')}</div><button class="btn btn2" id="skipUpgrade" style="width:100%;margin-top:10px">⏭️ Pular melhorias e continuar</button><p style="margin-top:12px;font-size:12px;color:#b7c6df">Os itens são dados automaticamente no fim de cada onda. Você pode carregar até ${inventoryCap} de cada tipo.</p></div>`;overlay.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>selectUpgrade(b.dataset.up));$('skipUpgrade').onclick=skipUpgrade}
+function skipUpgrade(){
+ if(!active||!choicePending)return;
+ selectedUpgrade=null;
+ choicePending=false;
+ paused=false;
+ wave++;
+ waveKills=0;
+ waveSpawned=0;
+ spawnAcc=0;
+ stats();
+ overlay.style.display='none';
+ $('flash').textContent='MELHORIAS PULADAS — SEUS PARAFUSOS FORAM PRESERVADOS!';
+ last=0;
+ raf=requestAnimationFrame(frame);
+}
+function buyItem(type){return}
+function selectUpgrade(type){
+ const u=upgrades.find(x=>x.id===type);
+ if(!u||!active||!choicePending||!availableUpgrades().some(x=>x.id===type)||kills<priceFor(u))return;
+ if(selectedUpgrade===type){selectedUpgrade=null;buyUpgrade(type);return}
+ selectedUpgrade=type;
+ const confirm=$('flash');
+ confirm.textContent='TOQUE NOVAMENTE PARA COMPRAR: '+u.name+' — '+priceFor(u)+' PARAFUSOS';
+ overlay.querySelectorAll('[data-up]').forEach(b=>{
+   const isSelected=b.dataset.up===type;
+   b.style.outline=isSelected?'3px solid #ffd166':'';
+   b.style.filter=isSelected?'brightness(1.25)':'';
+   const original=upgrades.find(x=>x.id===b.dataset.up);
+   if(original){
+     const span=b.querySelector('span');
+     if(span && isSelected) span.textContent='TOQUE NOVAMENTE PARA CONFIRMAR a compra. Custo: '+priceFor(original)+' parafusos.';
+     else if(span) span.textContent=original.desc;
+   }
+ });
+}
+function buyUpgrade(type){selectedUpgrade=null;const u=upgrades.find(x=>x.id===type);if(!u||!active||!choicePending||!availableUpgrades().some(x=>x.id===type)||kills<priceFor(u))return;kills-=priceFor(u);stats();applyUpgrade(type)}
+function applyUpgrade(type){if(!active||!choicePending)return;if(type==='turretFirst')autoTurrets=1;else if(type==='turretMore')autoTurrets++;else if(type==='turretPower')autoDamage++;else if(type==='damage')damageBonus++;else if(type==='slow')slowStacks++;else if(type==='rapid')rapidStacks++;else if(type==='armor')armorCharges++;else if(type==='score')scoreBonus+=2;else if(type==='pocket')inventoryCap=Math.min(5,inventoryCap+1);choicePending=false;paused=false;wave++;waveKills=0;waveSpawned=0;spawnAcc=0;stats();overlay.style.display='none';const names={damage:'DANO AUMENTADO!',slow:'INIMIGOS MAIS LENTOS!',rapid:'TOQUE REFORÇADO!',armor:'BLINDAGEM ATIVADA!',score:'SUCATA MAIS VALIOSA!'};$('flash').textContent=names[type]||'MELHORIA OBTIDA!';last=0;raf=requestAnimationFrame(frame)}
+function autoHit(r){if(!r||r.dead||!robots.includes(r))return;r.hp-=autoDamage;r.el.querySelector('i').style.width=Math.max(0,r.hp/r.maxHp*100)+'%';const hpLabel=r.el.querySelector('.name:last-child');if(hpLabel)hpLabel.textContent=Math.max(0,r.hp)+' HP';r.el.style.filter='brightness(1.8)';setTimeout(()=>{if(r.el.isConnected)r.el.style.filter=''},90);if(r.hp<=0){r.dead=true;kills+=r.t.score+scoreBonus+(r.boss?20:0);waveKills++;r.el.remove();robots=robots.filter(q=>q!==r);if(r.t.healer){robots.filter(q=>!q.dead).forEach(q=>{q.hp=Math.min(q.maxHp,q.hp+2);q.el.querySelector('i').style.width=(q.hp/q.maxHp*100)+'%';const label=q.el.querySelector('.name:last-child');if(label)label.textContent=q.hp+' HP'})}$('flash').textContent='MIRA AUTOMÁTICA: ALVO ELIMINADO';stats();if(waveKills>=wave*10){chooseUpgrade();return}}}
+function spawn(){if(!active||paused||waveSpawned>=wave*10)return;const difficulty=wave;let isBoss=difficulty%5===0&&bossSpawned<difficulty/5;if(isBoss)bossSpawned=Math.ceil(difficulty/5);const roll=Math.random();let idx=roll<.24?0:roll<.40?1:roll<.54?2:roll<.65?3:roll<.75?4:roll<.86?5:roll<.94?6:7;const t=types[idx];const maxHp=isBoss?24+Math.floor(elapsed/15):(t.hp+Math.floor(elapsed/25)*(idx>1?1:0));const el=document.createElement('button');el.className='robot'+(isBoss?' boss':t.zigzag?' zigzag':t.healer?' healer':t.factory?' factory':'');el.innerHTML=`<span class="face">${isBoss?'👹':t.face}</span><span class="name">${isBoss?'CHEFÃO':t.name}</span><span class="bar"><i></i></span><span class="name">${maxHp} HP</span>`;waveSpawned++;const r={el,t,hp:maxHp,maxHp,y:-70,x:10+Math.random()*(field.clientWidth-75),speed:(isBoss?15:t.spd)*(1+elapsed/130),dead:false,boss:isBoss,phase:Math.random()*Math.PI*2,baseX:0};r.baseX=r.x;el.style.left=r.x+'px';el.style.top=r.y+'px';el.querySelector('i').style.width='100%';el.onclick=e=>{e.stopPropagation();if(!active||paused||r.dead)return;taps++;let dmg=1+damageBonus;if(rapidStacks>0&&taps%5===0)dmg+=rapidStacks;r.hp-=dmg;el.style.transform='scale(.91)';setTimeout(()=>{if(el.isConnected)el.style.transform=''},70);el.querySelector('i').style.width=Math.max(0,r.hp/r.maxHp*100)+'%';el.querySelector('.name:last-child').textContent=Math.max(0,r.hp)+' HP';if(r.hp<=0){r.dead=true;if(elapsed>=freezeUntil)kills+=r.t.score+scoreBonus+(r.boss?20:0);waveKills++;el.remove();robots=robots.filter(q=>q!==r);if(r.t.healer){robots.filter(q=>!q.dead).forEach(q=>{q.hp=Math.min(q.maxHp,q.hp+2);q.el.querySelector('i').style.width=(q.hp/q.maxHp*100)+'%';q.el.querySelector('.name:last-child').textContent=q.hp+' HP'})}$('kills').textContent=kills;stats();if(waveKills>=wave*10){chooseUpgrade();return}$('flash').textContent=r.t.healer?'CURADOR DERROTADO! OS OUTROS FORAM CURADOS':r.boss?'CHEFÃO DERROTADO! +'+(r.t.score+scoreBonus+20):'+'+(r.t.score+scoreBonus)+' peças!';stats();setTimeout(()=>{$('flash').textContent=''},900)}};field.appendChild(el);robots.push(r);if(isBoss)$('flash').textContent='CHEFÃO DA ONDA '+difficulty+'!'}
+function frame(ts){if(!active)return;if(!last)last=ts;const dt=Math.min((ts-last)/1000,.05);last=ts;if(!paused){elapsed+=dt;spawnAcc+=dt;autoShotAcc+=dt;if(autoTurrets>0&&elapsed>=freezeUntil&&autoShotAcc>=0.55){autoShotAcc=0;for(let i=0;i<autoTurrets;i++){const target=robots.filter(r=>!r.dead).sort((a,b)=>b.y-a.y)[0];if(target)autoHit(target);if(!active||paused||choicePending)break}}spawnEvery=Math.max(.42,1.05-elapsed/140);if(spawnAcc>=spawnEvery&&waveSpawned<wave*10){spawnAcc=0;spawn()}for(const r of [...robots]){if(elapsed>=freezeUntil)r.y+=r.speed*dt;if(r.t.factory&&(r.boltsMade||0)<3&&waveSpawned<wave*10&&Math.random()<dt*.8){r.boltsMade=(r.boltsMade||0)+1;waveSpawned++;const bolt=types[0];const miniEl=document.createElement('button');miniEl.className='robot';miniEl.style.transform='scale(.75)';miniEl.innerHTML='<span class="face">🤖</span><span class="name">Parafuso</span><span class="bar"><i></i></span>';const mini={el:miniEl,t:bolt,hp:1,maxHp:1,y:r.y+30,x:Math.max(0,Math.min(field.clientWidth-60,r.x+(Math.random()-.5)*70)),speed:bolt.spd*.35,dead:false,phase:0,baseX:0};miniEl.style.left=mini.x+'px';miniEl.style.top=mini.y+'px';miniEl.onclick=e=>{e.stopPropagation();if(!active||paused||mini.dead)return;mini.dead=true;if(elapsed>=freezeUntil)kills+=1+scoreBonus;waveKills++;miniEl.remove();robots=robots.filter(q=>q!==mini);stats();if(waveKills>=wave*10)chooseUpgrade()};field.appendChild(miniEl);robots.push(mini)}if(r.t.zigzag&&!r.boss){r.x=r.baseX+Math.sin(elapsed*5+r.phase)*Math.min(65,field.clientWidth*.17);r.x=Math.max(0,Math.min(field.clientWidth-60,r.x));r.el.style.left=r.x+'px'}r.el.style.top=r.y+'px';if(r.y>field.clientHeight-48){if(armorCharges>0){armorCharges--;r.dead=true;r.el.remove();robots=robots.filter(q=>q!==r);$('flash').textContent='BLINDAGEM SALVOU VOCÊ!';continue}else{end();return}}}stats()}raf=requestAnimationFrame(frame)}
+function start(){cancelAnimationFrame(raf);clearRobots();active=true;paused=false;last=0;elapsed=0;kills=0;wave=1;damageBonus=0;autoTurrets=0;autoDamage=1;autoShotAcc=0;slowStacks=0;choicePending=false;nextWave=2;rapidStacks=0;armorCharges=0;scoreBonus=0;taps=0;bossSpawned=0;freezeItems=0;blastItems=0;healItems=0;inventoryCap=3;freezeUntil=0;spawnAcc=0;spawnEvery=1.05;waveKills=0;waveSpawned=0;stats();overlay.style.display='none';$('pause').textContent='Ⅱ Pausar';$('flash').textContent='';spawn();raf=requestAnimationFrame(frame)}
+$('freeze').onclick=()=>{if(!active||paused||freezeItems<=0)return;freezeItems--;freezeUntil=elapsed+4;robots.forEach(r=>{r.el.style.filter='hue-rotate(80deg) brightness(1.3)'});stats();$('flash').textContent='TEMPO CONGELADO!';setTimeout(()=>robots.forEach(r=>r.el.style.filter=''),4100)};
+$('blast').onclick=()=>{if(!active||paused||blastItems<=0)return;blastItems--;const cleared=robots.filter(r=>!r.dead);cleared.forEach(r=>{r.dead=true;r.el.remove();waveKills++});robots=[];stats();$('flash').textContent='EXPLOSÃO! SEM PARAFUSOS DE RECOMPENSA';if(waveKills>=wave*10)chooseUpgrade();};
+$('heal').onclick=()=>{if(!active||paused||healItems<=0)return;healItems--;armorCharges++;stats();$('flash').textContent='BLINDAGEM REPARADA!'};
+$('start').onclick=start;$('restart').onclick=start;$('pause').onclick=()=>{if(!active)return;paused=!paused;$('pause').textContent=paused?'▶ Continuar':'Ⅱ Pausar';$('flash').textContent=paused?'PAUSADO':'';if(paused){cancelAnimationFrame(raf)}else{last=0;raf=requestAnimationFrame(frame)}};
+})();
+</script>
+</html>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => {
+      console.warn('Não foi possível preparar o modo offline:', err);
+    });
+  });
+}
+</script>
